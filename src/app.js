@@ -7,7 +7,7 @@ const app = express();
 // Allowed frontend URLs
 const allowedOrigins = [
     "http://localhost:5173",
-    "https://your-frontend.vercel.app"
+    "https://job-prep-server-kappa.vercel.app"
 ];
 
 app.use(cors({
