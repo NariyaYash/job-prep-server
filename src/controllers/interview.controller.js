@@ -1,4 +1,4 @@
-const pdfParse = require('pdf-parse');
+const pdfParse = require('pdf-parse-fork');
 const generateInterviewReport = require("../services/ai.service");
 const interviewReportModel = require('../models/interviewReport.model');
 
