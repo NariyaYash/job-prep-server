@@ -27,17 +27,20 @@ async function registerUserController(req, res) {
 
     const token = jwt.sign({ id: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: "1d" })
 
-    // Prodecction of cookie from cross site scripting attack and cross site request forgery attack    
-    res.cookie("token", token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        maxAge: 24 * 60 * 60 * 1000,
-        path: "/",
-    });
+    if (process.env.PRODUCTION === "false") {
+        // local
+        res.cookie("token", token);
+    } else {
+        // Prodecction of cookie from cross site scripting attack and cross site request forgery attack    
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+            maxAge: 24 * 60 * 60 * 1000,
+            path: "/",
+        });
+    }
 
-    // local
-    // res.cookie("token", token);
 
     res.status(201).json({
         message: "User registered successfully",
@@ -68,17 +71,19 @@ async function loginUserController(req, res) {
     }
     const token = jwt.sign({ id: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: "1d" })
 
-    // Prodecction of cookie from cross site scripting attack and cross site request forgery attack    
-    res.cookie("token", token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        maxAge: 24 * 60 * 60 * 1000,
-        path: "/",
-    });
-
-    // local
-    // res.cookie("token", token);
+    if (process.env.PRODUCTION === "false") {
+        // local
+        res.cookie("token", token);
+    } else {
+        // Prodecction of cookie from cross site scripting attack and cross site request forgery attack    
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+            maxAge: 24 * 60 * 60 * 1000,
+            path: "/",
+        });
+    }
 
     res.status(200).json({
         message: "User loggedin successfully.",

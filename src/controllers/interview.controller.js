@@ -1,4 +1,4 @@
-const pdfParse = require('pdf-parse-fork');
+const PDF = require('pdf-parse-fork');
 const generateInterviewReport = require("../services/ai.service");
 const interviewReportModel = require('../models/interviewReport.model');
 
@@ -7,8 +7,19 @@ async function genrateInterviewReportController(req, res) {
     const { selfDescription, jobDescription } = req.body;
     try {
 
-        const resumeContent = await (new pdfParse.PDFParse(Uint8Array.from(req.file.buffer))).getText();
-        console.log("resumeContent", resumeContent.text)
+        // const resumeContent = await (PDF(Uint8Array.from(req.file.buffer))).getText();
+        // console.log("resumeContent", resumeContent.text)
+        if (!req.file) {
+            return res.status(400).json({ message: "No resume file uploaded" });
+        }
+
+        // Parse the PDF buffer directly from Multer
+        const data = await PDF(req.file.buffer);
+        const resumeContent = data.text;
+
+        if (!resumeContent || resumeContent.trim().length === 0) {
+            throw new Error("Could not extract text from PDF");
+        }
 
         const interviewReportByAI = await generateInterviewReport({
             resume: resumeContent,
