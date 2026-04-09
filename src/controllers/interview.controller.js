@@ -7,8 +7,6 @@ async function genrateInterviewReportController(req, res) {
     const { selfDescription, jobDescription } = req.body;
     try {
 
-        // const resumeContent = await (PDF(Uint8Array.from(req.file.buffer))).getText();
-        // console.log("resumeContent", resumeContent.text)
         if (!req.file) {
             return res.status(400).json({ message: "No resume file uploaded" });
         }
@@ -18,14 +16,30 @@ async function genrateInterviewReportController(req, res) {
         const resumeContent = data.text;
 
         if (!resumeContent || resumeContent.trim().length === 0) {
-            throw new Error("Could not extract text from PDF");
+            return res.status(429).json({
+                message: "Not able to read resume pdf. Please try again after some time."
+            });
+        }
+        
+        let interviewReportByAI = null;
+        try {
+            interviewReportByAI = await generateInterviewReport({
+                resume: resumeContent,
+                selfDescription,
+                jobDescription
+            })
+        } catch (error) {
+            console.log("Error generating interview report with AI", error)
+            return res.status(429).json({
+                message: "Not able to generate report. AI has reached its limit. Please try again after some time."
+            });
         }
 
-        const interviewReportByAI = await generateInterviewReport({
-            resume: resumeContent,
-            selfDescription,
-            jobDescription
-        })
+        if (!interviewReportByAI) {
+            return res.status(429).json({
+                message: "Not able to generate report. AI has reached its limit. Please try again after some time."
+            })
+        }
 
         const interviewReport = await interviewReportModel.create({
             user: req.user.id,

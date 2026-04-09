@@ -77,9 +77,7 @@ Strictly follow the severity enum and the day-wise structure. Do not include mar
         responseMimeType: "application/json",
       }
     });
-    console.log(res.text)
     const parsed = JSON.parse(res.text);
-    console.log("parsed : ", parsed)
 
     return parsed;
 
